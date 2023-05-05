@@ -1,10 +1,18 @@
-# springboot-utils 工具类集合
-<hr/>
-
+# DataGenius 一款基于mybaits对持久化层解耦的高级解决方案
+> DataGenius 是一款基于 mybaits 框架的智能数据库框架，能够兼容多种数据库，提供高效快速的增删改查基本代码生成功能，能够满足大部分业务场景的需求。DataGenius 具有智能化、易用化、高效化的特点，能够显著提高企业开发效率，降低开发成本。同时，DataGenius 还支持多种编程语言和开发框架，能够为不同领域的业务场景提供更加专业的解决方案。在未来，DataGenius 将不断发展和创新，成为数字化时代的重要贡献力量。
 <br>
 
-## 模块总览：
-<hr/>
+## data-common
+
+> + data-common 主要是提供一个工具，根据数据库实体，在service层，对数据库持久化层操作提供crud相关接口。
+>   - 目前第一版主要是在mybatis框架基础上进行集成，并整合了百度uidGenerator分布式id唯一生成方式进行主键生成
+>   - 提供最为基础的增删改查相关操作，包括单个及批量操作
+>   - 对于复杂的sql包括几种连接、group by、having、sort等方式提供了QueryTree的支持，基本涵盖了绝大部分的使用场景
+>   - 暂不支持with 、 临时表等复杂sql，这个也是缺陷，后续有计划进行补齐
+>   - 目前第一版仅支持pg、mysql两种数据库类型，对于需要扩展其他数据库，可以通过继承增强的方式进行兼容
+<br>
+
+### 一、模块总览： 
  
 |父模块名| 子模块名 | 层级 | 模块功能说明 |
 |---| --- | --- | --- |
@@ -14,15 +22,16 @@
 | - |data-common-web | 1 | web统一 |
 |springboot-archive-test | | 1 | 数据库增强测试类 |
 
+<br/>
 
-## 模块说明：<hr/>
+### 二、模块说明：
 
-### data-common-datasource 基于mybatis数据库增强模块
-> 基于mybatis，忽略持久化层的相关细节，快速开发业务系统，从而达到降本增效的效果
-> 集成了百度uidGenerator作为分布式主键id，可以适配分布式场景
-> 实现了自动化增强处理
+#### 2.1 data-common-datasource 基于mybatis数据库增强模块
+> + 基于mybatis，忽略持久化层的相关细节，快速开发业务系统，从而达到降本增效的效果
+> + 集成了百度uidGenerator作为分布式主键id，可以适配分布式场景
+> + 可以自行扩展增强
 
-### 直接使用示例：（以user对象举例）
+##### 2.1.1 引用data-common进行业务代码撰写示例：（以user对象举例）
 
 1.**实体**：
 >这里注意一般性要求指明表名:
@@ -86,7 +95,53 @@ spring:
     name: mysql
 ```
 
-### queryTree介绍：
+4. 继承service后可以直接使用方法：
+```java
+
+    public int add(T t);
+
+    int add(T t, String... ignoreFields);
+
+    int addWithUid(T t);
+
+    int addWithUid(T t, String... ignoreFields);
+
+    int addExcludeId(T t);
+
+    int addExcludeId(T t, String... ignoreFields);
+
+    int batchAdd(List<T> t);
+
+    int batchAdd(List<T> t, String... ignoreFields);
+
+    int batchAdd(List<T> t, int batchNum, String... ignoreFields);
+
+    public int updateNotNull(T t);
+
+    public int updateAll(T t);
+
+    public T findById(Object id);
+
+    public T findById(Object id, String... ignoreFields);
+
+
+    int deleteById(Object id);
+
+    int deleteByIds(List<Object> ids);
+
+    List<T> search(IQueryTree queryTree);
+
+    <R> List<R> search(IQueryTree queryTree, Class<R> clazz);
+
+    <R> TableDataInfo searchPageInfo(IQueryTree queryTree);
+
+    <R> TableDataInfo searchPageInfo(IQueryTree queryTree, Class<R> resultType);
+```
+
+##### 2.1.2 data-common高级搜索之queryTree介绍：
+
+> + 使用searchPageInfo进行分页检索时，为了更加灵活支持大部分业务场景的sql语句，我们使用QueryTree对查询的树级结构进行构建，其结构如下述代码所示；
+> + 对于子查询等，mysql等数据库并非做得较好，我个人也比较支持将子查询变成了几种连接查询操作，故使用子查询时需要进行sql的优化变成连接查询操作
 
 ```java
 import javax.annotation.Resource;
@@ -122,7 +177,7 @@ public class Test{
 }
 ```
 
-### 增强使用示例：（以user对象举例）
+##### 2.1.3 对DataSource类进行扩展使用示例：（以user对象举例）
 
 1. 继承CRUDGeneratorBuilder
 
