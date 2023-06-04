@@ -18,9 +18,6 @@ public class GlobalExceptionHandle {
 
     private final static Logger log = LoggerFactory.getLogger(GlobalExceptionHandle.class);
 
-    /**
-     * 自定义验证异常
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);

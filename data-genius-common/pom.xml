@@ -3,18 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
     <modelVersion>4.0.0</modelVersion>
     <artifactId>data-genius-common</artifactId>
     <groupId>io.github.fasterTool</groupId>
     <version>0.0.1</version>
 
     <packaging>pom</packaging>
-
     <modules>
         <module>data-genius-common-datasource</module>
         <module>data-genius-common-web</module>
-        <module>data-genius-common-swagger</module>
     </modules>
 
 
