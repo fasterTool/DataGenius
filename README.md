@@ -76,12 +76,12 @@ public class SpringBootApplication {
     }
 }
 ```  
-### 百度uidGenerator配置
+### 百度uidGenerator配置（可选）
 + sql：https://github.com/fasterTool/DataGenius/blob/master/sql/init.sql
 + config配置：https://github.com/fasterTool/DataGenius/blob/master/springboot-archive-demo/src/main/java/cn/ly/archive/study/test/config/UidConfig.java
 
 
-### 增强数据库类型配置
+### 增强数据库类型配置（可选）
 当mysql及postgresql无法满足业务需求需要增强扩展其他数据库时使用：
 + 教程：[2.1.3 对DataSource类进行扩展使用示例](#2.1.3-对datasource类进行扩展使用示例)
 + 示例：[https://github.com/fasterTool/DataGenius/tree/master/springboot-archive-demo/src/main/java/cn/ly/archive/study/test/config/datasource](config/datasource)
