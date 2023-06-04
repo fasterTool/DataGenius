@@ -2,6 +2,7 @@
 > DataGenius 是一款基于 mybaits 框架的智能数据库框架，能够兼容多种数据库，提供高效快速的增删改查基本代码生成功能，能够满足大部分业务场景的需求。DataGenius 具有智能化、易用化、高效化的特点，能够显著提高企业开发效率，降低开发成本。同时，DataGenius 还支持多种编程语言和开发框架，能够为不同领域的业务场景提供更加专业的解决方案。在未来，DataGenius 将不断发展和创新，成为数字化时代的重要贡献力量。
 <br>
 
+
 ## data-common
 
 > + data-common 主要是提供一个工具，根据数据库实体，在service层，对数据库持久化层操作提供crud相关接口。
@@ -10,19 +11,94 @@
 >   - 对于复杂的sql包括几种连接、group by、having、sort等方式提供了QueryTree的支持，基本涵盖了绝大部分的使用场景
 >   - 暂不支持with 、 临时表等复杂sql，这个也是缺陷，后续有计划进行补齐
 >   - 目前第一版仅支持pg、mysql两种数据库类型，对于需要扩展其他数据库，可以通过继承增强的方式进行兼容
-<br>
+
+## 最新版本
+https://mvnrepository.com/artifact/io.github.fasterTool/data-genius-common-datasource
+```xml
+  <!-- https://mvnrepository.com/artifact/io.github.fasterTool/data-genius-common-datasource -->
+<dependency>
+    <groupId>io.github.fasterTool</groupId>
+    <artifactId>data-genius-common-datasource</artifactId>
+    <version>0.0.1</version>
+</dependency>
+
+```
+
+## 快速开始
+
+### application.yml 配置
+ 
++ 配置spring.datasource.name 来指定数据库类型
++ 配置mybatis配置项（这里主要是如果需要DataSource类的uidGenerator作为分布式主键生成器使用，自增等业务忽略）
+
+```
+spring: 
+  datasource:
+    # 通过name来判断使用哪个数据库，默认mysql，暂时只支持mysql和pg（postgresql）两种，可以增强自己实现
+    name: other
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: .....
+    username: ......
+    password: ......
+    type: com.mysql.cj.jdbc.MysqlDataSource 
+    
+    ......
+    
+# 当我们需要uidGenerator作为分布式主键时需要配置classpath:/mybatis/mapper/*.xml
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/*.xml 
+```
+### springboot启动类配置
+ 启动类配置
+
+```java
+
+/**
+ * 
+ *  <ul>
+ *      <li>配置mapperScan
+ *          <ul>
+ *              <li>datasouce必备引入包：cn.fasterTool.common.datasource.mapper</li>
+ *              <li>百度uidGenerator引入包：com.baidu.fsg.uid.worker.dao</li>
+ *          </ul>
+ *      </li> 
+ *      <li>增强jdbc配置类（无需增强请忽略）：cn.ly.study.spring.config</li>
+ *  </ul>
+ *  
+ */
+@SpringBootApplication
+@MapperScan(basePackages = {"cn.fasterTool.common.datasource.mapper", "com.baidu.fsg.uid.worker.dao"})
+@Configuration("cn.ly.study.spring.config")
+@EnableOpenApi
+public class SpringBootApplication { 
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootApplication.class, args);
+    }
+}
+```  
+### 百度uidGenerator配置
++ sql：https://github.com/fasterTool/DataGenius/blob/master/sql/init.sql
++ config配置：https://github.com/fasterTool/DataGenius/blob/master/springboot-archive-demo/src/main/java/cn/ly/archive/study/test/config/UidConfig.java
+
+
+### 增强数据库类型配置
+当mysql及postgresql无法满足业务需求需要增强扩展其他数据库时使用：
++ 教程：[2.1.3 对DataSource类进行扩展使用示例](#2.1.3-对datasource类进行扩展使用示例)
++ 示例：[https://github.com/fasterTool/DataGenius/tree/master/springboot-archive-demo/src/main/java/cn/ly/archive/study/test/config/datasource](config/datasource)
+
+<br/>
+<hr/>
+<br/>
 
 ### 一、模块总览： 
  
 |父模块名| 子模块名 | 层级 | 模块功能说明 |
 |---| --- | --- | --- |
 |data-common | - | 1 | 数据库相关模块 |
-| - |data-common-datasource | 1 | 基于mybatis数据库增强 |
-| - |data-common-swagger | 1 | swagger相关 |
+| - |data-common-datasource | 1 | 基于mybatis数据库增强 | 
 | - |data-common-web | 1 | web统一 |
 |springboot-archive-test | | 1 | 数据库增强测试类 |
-
-<br/>
+ 
 
 ### 二、模块说明：
 
@@ -177,7 +253,7 @@ public class Test{
 }
 ```
 
-##### 2.1.3 对DataSource类进行扩展使用示例：（以user对象举例）
+##### 2.1.3 对DataSource类进行扩展使用示例
 
 1. 继承CRUDGeneratorBuilder
 
